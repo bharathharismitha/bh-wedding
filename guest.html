@@ -3,15 +3,22 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#fff9ef">
+
   <title>Our Guests | Bharath & Harishmitha</title>
+
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
+
   <main class="shell">
+
     <header>
       <div class="monogram">B ♡ H</div>
       <div class="leaves">✦ Together Forever ✦</div>
+
       <nav>
         <a href="index.html">Home</a>
         <a href="events.html">Events</a>
@@ -22,80 +29,219 @@
     </header>
 
     <div class="divider">❀ ✦ ❀</div>
+
     <h1>Our Beloved Guests</h1>
 
     <section class="frame center">
-      <h2>Your Presence Is Our Gift</h2>
-      <p>Dear Family and Friends,</p>
+
+      <h2 id="welcomeHeading">
+        Your Presence Is Our Gift
+      </h2>
+
+      <p id="personalWelcome" class="quote">
+        Dear Family and Friends,
+      </p>
+
       <p>
         We are delighted to invite you to celebrate
         the wedding of Bharath and Harishmitha.
       </p>
+
       <p>
         Your love, blessings, and warm wishes
         mean the world to us.
       </p>
+
       <p>
         We look forward to creating beautiful
         memories together.
       </p>
-      <a class="button" href="rsvp.html">Confirm Your RSVP</a>
+
+      <div class="divider">❀ ♡ ❀</div>
+
+      <h2>Bharath &amp; Harishmitha</h2>
+
+      <p class="date">
+        Sunday, December 27, 2026
+      </p>
+
+      <p class="muhurtham">
+        💐 Shubha Muhurtham — 8:12 AM 💐
+      </p>
+
+      <p>
+        The Bliss at Aubrey<br>
+        4381 US-377, Aubrey, TX 76227
+      </p>
+
+      <a
+        class="button"
+        href="https://www.google.com/maps/search/?api=1&query=4381+US-377+Aubrey+TX+76227"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Get Directions
+      </a>
+
     </section>
 
-    <p class="quote">With Love,<br>Bharath &amp; Harishmitha</p>
+    <p class="quote">
+      With Love,<br>
+      Bharath &amp; Harishmitha ❤️
+    </p>
+
     <div class="foot"></div>
+
   </main>
 
-  <audio id="weddingMusic" src="assets/music.mp3"
-         loop preload="auto"></audio>
-  <button id="musicToggle" class="muter" type="button"
-          aria-label="Mute or unmute wedding music">🔊</button>
+  <!-- WEDDING MUSIC -->
+
+  <audio
+    id="weddingMusic"
+    src="assets/music.mp3"
+    loop
+    preload="auto"
+  ></audio>
+
+  <button
+    id="musicToggle"
+    class="muter"
+    type="button"
+    aria-label="Mute wedding music"
+  >
+    🔊
+  </button>
 
   <script>
+
+    // =====================================
+    // PERSONALIZED THANK-YOU MESSAGE
+    // =====================================
+
+    const guestName =
+      sessionStorage.getItem("weddingGuestName");
+
+    const rsvpSuccess =
+      sessionStorage.getItem("weddingRSVPSuccess") === "true";
+
+    if (rsvpSuccess) {
+
+      document.getElementById(
+        "welcomeHeading"
+      ).textContent = "Thank You for Your RSVP! ❤️";
+
+      document.getElementById(
+        "personalWelcome"
+      ).textContent = guestName
+        ? `Dear ${guestName}, your RSVP has been received. We can't wait to celebrate with you!`
+        : "Your RSVP has been received. We can't wait to celebrate with you!";
+
+      sessionStorage.removeItem("weddingRSVPSuccess");
+
+    }
+
+
+    // =====================================
+    // MUSIC AUTOPLAY + MUTE / UNMUTE
+    // =====================================
+
     const music = document.getElementById("weddingMusic");
     const musicButton = document.getElementById("musicToggle");
 
     music.volume = 0.65;
-    music.muted = sessionStorage.getItem("musicMuted") === "true";
+
+    music.muted =
+      sessionStorage.getItem("musicMuted") === "true";
 
     function updateMusicButton() {
-      musicButton.textContent = music.muted ? "🔇" : "🔊";
-      musicButton.setAttribute("aria-label",
-        music.muted ? "Unmute wedding music" : "Mute wedding music");
+
+      musicButton.textContent =
+        music.muted ? "🔇" : "🔊";
+
+      musicButton.setAttribute(
+        "aria-label",
+        music.muted
+          ? "Unmute wedding music"
+          : "Mute wedding music"
+      );
+
     }
 
     function playMusic() {
-      music.play().catch(() => {});
+      music.play().catch(() => {
+        // Browser may require user interaction.
+      });
     }
 
     music.addEventListener("loadedmetadata", () => {
-      const saved = Number(sessionStorage.getItem("musicTime") || 0);
-      if (Number.isFinite(saved) && saved > 0 &&
-          Number.isFinite(music.duration)) {
-        music.currentTime = Math.min(saved, Math.max(0, music.duration - 0.1));
+
+      const saved = Number(
+        sessionStorage.getItem("musicTime") || 0
+      );
+
+      if (
+        Number.isFinite(saved) &&
+        saved > 0 &&
+        Number.isFinite(music.duration)
+      ) {
+
+        music.currentTime = Math.min(
+          saved,
+          Math.max(0, music.duration - 0.1)
+        );
+
       }
+
     });
 
     music.addEventListener("timeupdate", () => {
-      sessionStorage.setItem("musicTime", String(music.currentTime));
+
+      sessionStorage.setItem(
+        "musicTime",
+        String(music.currentTime)
+      );
+
     });
 
     window.addEventListener("pagehide", () => {
-      sessionStorage.setItem("musicTime", String(music.currentTime));
+
+      sessionStorage.setItem(
+        "musicTime",
+        String(music.currentTime)
+      );
+
     });
 
     musicButton.addEventListener("click", () => {
+
       music.muted = !music.muted;
-      sessionStorage.setItem("musicMuted", String(music.muted));
+
+      sessionStorage.setItem(
+        "musicMuted",
+        String(music.muted)
+      );
+
       updateMusicButton();
       playMusic();
+
     });
 
-    document.addEventListener("pointerdown", playMusic, { once: true });
-    document.addEventListener("keydown", playMusic, { once: true });
+    document.addEventListener(
+      "pointerdown",
+      playMusic,
+      { once: true }
+    );
+
+    document.addEventListener(
+      "keydown",
+      playMusic,
+      { once: true }
+    );
 
     updateMusicButton();
     playMusic();
+
   </script>
+
 </body>
 </html>
