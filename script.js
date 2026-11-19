@@ -1,94 +1,100 @@
-document.addEventListener("DOMContentLoaded", () => {
 
+document.addEventListener("DOMContentLoaded", () => {
   const config = window.WEDDING_CONFIG || {};
 
-  /* ============================
-     WEDDING MUSIC
-  ============================ */
+  // ==========================================
+  // WEDDING MUSIC - AUTOPLAY + MUTE / UNMUTE
+  // ==========================================
 
   const music = document.getElementById("weddingMusic");
   const musicButton = document.getElementById("musicToggle");
 
   if (music && musicButton) {
-
     music.src = config.music || "assets/music.mp3";
+    music.loop = true;
     music.volume = 0.65;
+    music.preload = "auto";
 
     const savedTime = Number(
       sessionStorage.getItem("weddingMusicTime") || 0
     );
 
-    const wantsMusic =
-      sessionStorage.getItem("weddingMusicEnabled") === "true";
+    const wasMuted =
+      sessionStorage.getItem("weddingMusicMuted") === "true";
+
+    music.muted = wasMuted;
+
+    let userPaused = false;
 
     function updateMusicButton() {
-      if (music.paused) {
-        musicButton.textContent = "♫";
-        musicButton.setAttribute(
-          "aria-label",
-          "Play wedding music"
-        );
-        musicButton.title = "Play Music";
-      } else {
-        musicButton.textContent = "❚❚";
-        musicButton.setAttribute(
-          "aria-label",
-          "Pause wedding music"
-        );
-        musicButton.title = "Pause Music";
-      }
+      musicButton.textContent = music.muted ? "🔇" : "🔊";
+
+      musicButton.setAttribute(
+        "aria-label",
+        music.muted ? "Unmute wedding music" : "Mute wedding music"
+      );
+
+      musicButton.title = music.muted
+        ? "Unmute Music"
+        : "Mute Music";
     }
 
-    function playMusic() {
-      return music.play()
-        .then(() => {
-          sessionStorage.setItem(
-            "weddingMusicEnabled",
-            "true"
-          );
-          updateMusicButton();
-        })
-        .catch(() => {
-          updateMusicButton();
-        });
+    function startMusic() {
+      if (userPaused) return;
+
+      music.play().then(() => {
+        updateMusicButton();
+      }).catch(() => {
+        // Browser may require a user interaction.
+      });
     }
 
     music.addEventListener("loadedmetadata", () => {
       if (Number.isFinite(savedTime) && savedTime > 0) {
         try {
-          music.currentTime = Math.min(
-            savedTime,
-            Math.max(0, music.duration - 0.1)
-          );
+          if (Number.isFinite(music.duration)) {
+            music.currentTime = Math.min(
+              savedTime,
+              Math.max(0, music.duration - 0.1)
+            );
+          }
         } catch (error) {
-          console.log("Music position unavailable");
+          console.warn("Could not restore music position", error);
         }
       }
-
-      if (wantsMusic) {
-        playMusic();
-      }
     });
 
+    // Try autoplay immediately.
+    startMusic();
+
+    // Retry when the guest first interacts with the page.
+    // This helps when browsers block autoplay with sound.
+    function startOnInteraction() {
+      if (!userPaused && music.paused) {
+        startMusic();
+      }
+    }
+
+    document.addEventListener("pointerdown", startOnInteraction);
+    document.addEventListener("keydown", startOnInteraction);
+
+    // Mute / unmute without stopping playback.
     musicButton.addEventListener("click", () => {
+      music.muted = !music.muted;
+
+      sessionStorage.setItem(
+        "weddingMusicMuted",
+        String(music.muted)
+      );
+
+      updateMusicButton();
 
       if (music.paused) {
-        playMusic();
-      } else {
-        music.pause();
-
-        sessionStorage.setItem(
-          "weddingMusicEnabled",
-          "false"
-        );
-
-        updateMusicButton();
+        startMusic();
       }
     });
 
-    music.addEventListener("play", updateMusicButton);
-    music.addEventListener("pause", updateMusicButton);
-
+    // Remember music position between pages.
     music.addEventListener("timeupdate", () => {
       sessionStorage.setItem(
         "weddingMusicTime",
@@ -106,46 +112,35 @@ document.addEventListener("DOMContentLoaded", () => {
     updateMusicButton();
   }
 
-  /* ============================
-     RSVP FORM - FORMSPREE
-  ============================ */
+  // ==========================================
+  // RSVP FORM - FORMSPREE ONLY
+  // ==========================================
 
   const form = document.getElementById("rsvpForm");
 
   if (form) {
-
-    const submitButton =
-      document.getElementById("submitRSVP");
-
-    const status =
-      document.getElementById("rsvpStatus");
+    const submitButton = document.getElementById("submitRSVP");
+    const status = document.getElementById("rsvpStatus");
 
     form.addEventListener("submit", async (event) => {
-
       event.preventDefault();
 
       const selectedEvents = Array.from(
-        form.querySelectorAll(
-          'input[name="events"]:checked'
-        )
+        form.querySelectorAll('input[name="events"]:checked')
       ).map(input => input.value);
 
       const selectedMeals = Array.from(
-        form.querySelectorAll(
-          'input[name="meal_preference"]:checked'
-        )
+        form.querySelectorAll('input[name="meal_preference"]:checked')
       ).map(input => input.value);
 
       if (selectedEvents.length === 0) {
-        status.textContent =
-          "Please select at least one event.";
+        status.textContent = "Please select at least one event.";
         status.className = "status error";
         return;
       }
 
       if (selectedMeals.length === 0) {
-        status.textContent =
-          "Please select your meal preference.";
+        status.textContent = "Please select your meal preference.";
         status.className = "status error";
         return;
       }
@@ -170,30 +165,19 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      const endpoint = config.formspree;
-
-      if (!endpoint) {
-        status.textContent =
-          "RSVP service is not configured.";
-        status.className = "status error";
-        return;
-      }
+      const endpoint =
+        config.formspree ||
+        "https://formspree.io/f/xrpqkrwa";
 
       const formData = new FormData();
 
       formData.append("name", name);
       formData.append("guests", String(guests));
-
-      formData.append(
-        "events",
-        selectedEvents.join(", ")
-      );
-
+      formData.append("events", selectedEvents.join(", "));
       formData.append(
         "meal_preference",
         selectedMeals.join(", ")
       );
-
       formData.append(
         "_subject",
         "New Bharath & Harishmitha Wedding RSVP"
@@ -206,7 +190,6 @@ document.addEventListener("DOMContentLoaded", () => {
       status.className = "status";
 
       try {
-
         const response = await fetch(endpoint, {
           method: "POST",
           body: formData,
@@ -216,7 +199,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         if (!response.ok) {
-          throw new Error("Submission failed");
+          throw new Error("Formspree submission failed");
         }
 
         status.textContent =
@@ -225,11 +208,9 @@ document.addEventListener("DOMContentLoaded", () => {
         status.className = "status success";
 
         form.reset();
-
         document.getElementById("guestCount").value = 1;
 
       } catch (error) {
-
         console.error("RSVP error:", error);
 
         status.textContent =
@@ -238,13 +219,9 @@ document.addEventListener("DOMContentLoaded", () => {
         status.className = "status error";
 
       } finally {
-
         submitButton.disabled = false;
         submitButton.textContent = "Submit RSVP";
-
       }
-
     });
   }
-
 });
