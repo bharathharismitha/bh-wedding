@@ -514,3 +514,12 @@ input[type="checkbox"] {
   font-weight: bold;
   margin: 15px 0;
 }
+
+.muhurtham {
+  text-align: center;
+  color: #820d2b;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 22px;
+  font-weight: bold;
+  margin: 15px 0;
+}
