@@ -1,19 +1,17 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#fff9ef">
-  <title>RSVP | Bharath & Harishmitha</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Wedding RSVP | Bharath & Harishmitha</title>
   <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
   <main class="shell">
     <header>
       <div class="monogram">B ♡ H</div>
       <div class="leaves">✦ Together Forever ✦</div>
-
       <nav>
         <a href="index.html">Home</a>
         <a href="events.html">Events</a>
@@ -24,7 +22,6 @@
     </header>
 
     <div class="divider">❀ ✦ ❀</div>
-
     <h1>Kindly RSVP</h1>
 
     <p class="quote">
@@ -33,119 +30,187 @@
     </p>
 
     <section class="frame">
-      <form id="rsvpForm">
+      <form id="rsvpForm"
+            action="https://formspree.io/f/xrpqkrwa"
+            method="POST">
 
         <label class="field" for="guestName">
           Your Name
-          <input
-            type="text"
-            id="guestName"
-            name="name"
-            placeholder="Enter your full name"
-            maxlength="120"
-            required
-          >
+          <input type="text" id="guestName" name="name"
+                 placeholder="Enter your full name" required>
         </label>
 
         <label class="field" for="guestCount">
           Number of Guests (Including You)
-          <input
-            type="number"
-            id="guestCount"
-            name="guests"
-            min="1"
-            max="50"
-            value="1"
-            required
-          >
+          <input type="number" id="guestCount" name="guests"
+                 min="1" max="50" value="1" required>
         </label>
 
         <h3>Events You Will Attend</h3>
 
         <label class="choice">
-          <input
-            type="checkbox"
-            name="events"
-            value="Sangeeth"
-          >
+          <input type="checkbox" name="events" value="Sangeeth">
           Sangeeth — December 25
         </label>
-
         <label class="choice">
-          <input
-            type="checkbox"
-            name="events"
-            value="Haldi"
-          >
+          <input type="checkbox" name="events" value="Haldi">
           Haldi — December 26
         </label>
-
         <label class="choice">
-          <input
-            type="checkbox"
-            name="events"
-            value="Wedding"
-          >
+          <input type="checkbox" name="events" value="Wedding">
           Wedding — December 27
         </label>
 
         <h3>Meal Preference</h3>
-
         <p class="center">
-          You may select both options if your group
-          includes different preferences.
+          Select both if your group includes different preferences.
         </p>
 
         <label class="choice">
-          <input
-            type="checkbox"
-            name="meal_preference"
-            value="Vegetarian"
-          >
+          <input type="checkbox" name="meal_preference"
+                 value="Vegetarian">
           Vegetarian
         </label>
-
         <label class="choice">
-          <input
-            type="checkbox"
-            name="meal_preference"
-            value="Non-Vegetarian"
-          >
+          <input type="checkbox" name="meal_preference"
+                 value="Non-Vegetarian">
           Non-Vegetarian
         </label>
 
-        <input
-          type="hidden"
-          name="_subject"
-          value="New Bharath & Harishmitha Wedding RSVP"
-        >
-
-        <button
-          type="submit"
-          id="submitRSVP"
-          class="button"
-        >
+        <button id="submitRSVP" class="button" type="submit">
           Submit RSVP
         </button>
-
-        <p
-          id="rsvpStatus"
-          class="status"
-          role="status"
-          aria-live="polite"
-        ></p>
-
+        <p id="rsvpStatus" class="status"
+           role="status" aria-live="polite"></p>
       </form>
     </section>
 
-    <div class="foot" aria-hidden="true"></div>
+    <div class="foot"></div>
   </main>
 
-  <audio id="weddingMusic" loop preload="none"></audio>
+  <audio id="weddingMusic" src="assets/music.mp3"
+         loop preload="auto"></audio>
   <button id="musicToggle" class="muter" type="button"
-          aria-label="Play wedding music">♫</button>
+          aria-label="Mute or unmute wedding music">🔊</button>
 
-  <script src="config.js"></script>
-  <script src="script.js"></script>
+  <script>
+    const music = document.getElementById("weddingMusic");
+    const musicButton = document.getElementById("musicToggle");
+
+    music.volume = 0.65;
+    music.muted = sessionStorage.getItem("musicMuted") === "true";
+
+    function updateMusicButton() {
+      musicButton.textContent = music.muted ? "🔇" : "🔊";
+      musicButton.setAttribute("aria-label",
+        music.muted ? "Unmute wedding music" : "Mute wedding music");
+    }
+
+    function playMusic() {
+      music.play().catch(() => {});
+    }
+
+    music.addEventListener("loadedmetadata", () => {
+      const saved = Number(sessionStorage.getItem("musicTime") || 0);
+      if (Number.isFinite(saved) && saved > 0 &&
+          Number.isFinite(music.duration)) {
+        music.currentTime = Math.min(saved, Math.max(0, music.duration - 0.1));
+      }
+    });
+
+    music.addEventListener("timeupdate", () => {
+      sessionStorage.setItem("musicTime", String(music.currentTime));
+    });
+
+    window.addEventListener("pagehide", () => {
+      sessionStorage.setItem("musicTime", String(music.currentTime));
+    });
+
+    musicButton.addEventListener("click", () => {
+      music.muted = !music.muted;
+      sessionStorage.setItem("musicMuted", String(music.muted));
+      updateMusicButton();
+      playMusic();
+    });
+
+    document.addEventListener("pointerdown", playMusic, { once: true });
+    document.addEventListener("keydown", playMusic, { once: true });
+
+    updateMusicButton();
+    playMusic();
+
+    // Formspree submission
+    const form = document.getElementById("rsvpForm");
+    const submitButton = document.getElementById("submitRSVP");
+    const status = document.getElementById("rsvpStatus");
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const events = [...form.querySelectorAll(
+        'input[name="events"]:checked'
+      )].map(input => input.value);
+
+      const meals = [...form.querySelectorAll(
+        'input[name="meal_preference"]:checked'
+      )].map(input => input.value);
+
+      if (!events.length || !meals.length) {
+        status.textContent =
+          "Please select at least one event and meal preference.";
+        status.className = "status error";
+        return;
+      }
+
+      const name = document.getElementById("guestName").value.trim();
+      const guests = Number(document.getElementById("guestCount").value);
+
+      if (!name || !Number.isInteger(guests) ||
+          guests < 1 || guests > 50) {
+        status.textContent = "Please enter valid guest details.";
+        status.className = "status error";
+        return;
+      }
+
+      const data = new FormData();
+      data.append("name", name);
+      data.append("guests", String(guests));
+      data.append("events", events.join(", "));
+      data.append("meal_preference", meals.join(", "));
+      data.append("_subject",
+        "New Bharath & Harishmitha Wedding RSVP");
+
+      submitButton.disabled = true;
+      submitButton.textContent = "Submitting...";
+      status.textContent = "Sending your RSVP...";
+      status.className = "status";
+
+      try {
+        const response = await fetch(form.action, {
+          method: "POST",
+          body: data,
+          headers: { Accept: "application/json" }
+        });
+
+        if (!response.ok) {
+          throw new Error("RSVP submission failed");
+        }
+
+        status.textContent =
+          "Thank you! Your RSVP has been submitted successfully! ❤️";
+        status.className = "status success";
+        form.reset();
+        document.getElementById("guestCount").value = 1;
+      } catch (error) {
+        console.error(error);
+        status.textContent =
+          "Unable to submit. Please try again.";
+        status.className = "status error";
+      } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = "Submit RSVP";
+      }
+    });
+  </script>
 </body>
 </html>
