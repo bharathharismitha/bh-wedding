@@ -47,24 +47,23 @@
 
         <label class="field" for="guestName">
           Your Name
-
           <input
             type="text"
             id="guestName"
             name="name"
             placeholder="Enter your full name"
             maxlength="120"
+            autocomplete="name"
             required
           >
         </label>
 
         <label class="field" for="guestCount">
-          Number of Guests (Including You)
-
+          Total Number of Guests (Including You)
           <input
             type="number"
             id="guestCount"
-            name="guests"
+            name="total_guests"
             min="1"
             max="50"
             value="1"
@@ -77,7 +76,7 @@
         <label class="choice">
           <input
             type="checkbox"
-            name="events"
+            name="event_selection"
             value="Sangeeth"
           >
           Sangeeth — December 25
@@ -86,7 +85,7 @@
         <label class="choice">
           <input
             type="checkbox"
-            name="events"
+            name="event_selection"
             value="Haldi"
           >
           Haldi — December 26
@@ -95,7 +94,7 @@
         <label class="choice">
           <input
             type="checkbox"
-            name="events"
+            name="event_selection"
             value="Wedding"
           >
           Wedding — December 27
@@ -104,14 +103,13 @@
         <h3>Meal Preference</h3>
 
         <p class="center">
-          Select both if your group includes
-          different meal preferences.
+          Select one or both options based on your group.
         </p>
 
         <label class="choice">
           <input
             type="checkbox"
-            name="meal_preference"
+            name="meal_selection"
             value="Vegetarian"
           >
           Vegetarian
@@ -120,7 +118,7 @@
         <label class="choice">
           <input
             type="checkbox"
-            name="meal_preference"
+            name="meal_selection"
             value="Non-Vegetarian"
           >
           Non-Vegetarian
@@ -176,7 +174,7 @@
   <script>
 
     // =====================================
-    // MUSIC AUTOPLAY + MUTE / UNMUTE
+    // WEDDING MUSIC
     // =====================================
 
     const music = document.getElementById("weddingMusic");
@@ -188,9 +186,7 @@
       sessionStorage.getItem("musicMuted") === "true";
 
     function updateMusicButton() {
-
-      musicButton.textContent =
-        music.muted ? "🔇" : "🔊";
+      musicButton.textContent = music.muted ? "🔇" : "🔊";
 
       musicButton.setAttribute(
         "aria-label",
@@ -198,19 +194,15 @@
           ? "Unmute wedding music"
           : "Mute wedding music"
       );
-
     }
 
     function playMusic() {
-
       music.play().catch(() => {
-        // Browser may block autoplay until user interaction.
+        // Browser may block autoplay until interaction.
       });
-
     }
 
     music.addEventListener("loadedmetadata", () => {
-
       const saved = Number(
         sessionStorage.getItem("musicTime") || 0
       );
@@ -220,36 +212,28 @@
         saved > 0 &&
         Number.isFinite(music.duration)
       ) {
-
         music.currentTime = Math.min(
           saved,
           Math.max(0, music.duration - 0.1)
         );
-
       }
-
     });
 
     music.addEventListener("timeupdate", () => {
-
       sessionStorage.setItem(
         "musicTime",
         String(music.currentTime)
       );
-
     });
 
     window.addEventListener("pagehide", () => {
-
       sessionStorage.setItem(
         "musicTime",
         String(music.currentTime)
       );
-
     });
 
     musicButton.addEventListener("click", () => {
-
       music.muted = !music.muted;
 
       sessionStorage.setItem(
@@ -258,9 +242,7 @@
       );
 
       updateMusicButton();
-
       playMusic();
-
     });
 
     document.addEventListener(
@@ -280,92 +262,76 @@
 
 
     // =====================================
-    // RSVP FORM SUBMISSION
+    // RSVP SUBMISSION - FORMSPREE
     // =====================================
 
     const form = document.getElementById("rsvpForm");
-
-    const submitButton =
-      document.getElementById("submitRSVP");
-
-    const status =
-      document.getElementById("rsvpStatus");
+    const submitButton = document.getElementById("submitRSVP");
+    const status = document.getElementById("rsvpStatus");
 
     form.addEventListener("submit", async (event) => {
 
       event.preventDefault();
 
-      // Selected events
-
-      const selectedEvents = Array.from(
-        form.querySelectorAll(
-          'input[name="events"]:checked'
-        )
-      ).map(input => input.value);
-
-      // Selected meal preferences
-
-      const selectedMeals = Array.from(
-        form.querySelectorAll(
-          'input[name="meal_preference"]:checked'
-        )
-      ).map(input => input.value);
-
-      if (selectedEvents.length === 0) {
-
-        status.textContent =
-          "Please select at least one event.";
-
-        status.className = "status error";
-
-        return;
-
-      }
-
-      if (selectedMeals.length === 0) {
-
-        status.textContent =
-          "Please select your meal preference.";
-
-        status.className = "status error";
-
-        return;
-
-      }
-
       const name = document
         .getElementById("guestName")
         .value.trim();
 
-      const guests = Number(
+      const totalGuests = Number(
         document.getElementById("guestCount").value
       );
 
+      const selectedEvents = Array.from(
+        form.querySelectorAll(
+          'input[name="event_selection"]:checked'
+        )
+      ).map(input => input.value);
+
+      const selectedMeals = Array.from(
+        form.querySelectorAll(
+          'input[name="meal_selection"]:checked'
+        )
+      ).map(input => input.value);
+
+      // Validate guest information
+
       if (
         !name ||
-        !Number.isInteger(guests) ||
-        guests < 1 ||
-        guests > 50
+        !Number.isInteger(totalGuests) ||
+        totalGuests < 1 ||
+        totalGuests > 50
       ) {
-
         status.textContent =
           "Please enter a valid name and guest count.";
 
         status.className = "status error";
-
         return;
-
       }
 
-      // Prepare Formspree submission
+      if (selectedEvents.length === 0) {
+        status.textContent =
+          "Please select at least one event.";
+
+        status.className = "status error";
+        return;
+      }
+
+      if (selectedMeals.length === 0) {
+        status.textContent =
+          "Please select your meal preference.";
+
+        status.className = "status error";
+        return;
+      }
+
+      // Prepare readable Formspree fields
 
       const formData = new FormData();
 
       formData.append("name", name);
-
       formData.append(
-        "guests",
-        String(guests)
+        "total_guests",
+        String(totalGuests)
       );
 
       formData.append(
@@ -378,44 +344,59 @@
         selectedMeals.join(", ")
       );
 
+      // Per-event attendance fields
+      // Each selected event receives the total guest count.
+
+      formData.append(
+        "sangeeth_guests",
+        selectedEvents.includes("Sangeeth")
+          ? String(totalGuests)
+          : "0"
+      );
+
+      formData.append(
+        "haldi_guests",
+        selectedEvents.includes("Haldi")
+          ? String(totalGuests)
+          : "0"
+      );
+
+      formData.append(
+        "wedding_guests",
+        selectedEvents.includes("Wedding")
+          ? String(totalGuests)
+          : "0"
+      );
+
       formData.append(
         "_subject",
         "New Bharath & Harishmitha Wedding RSVP"
       );
 
       submitButton.disabled = true;
+      submitButton.textContent = "Submitting...";
 
-      submitButton.textContent =
-        "Submitting...";
-
-      status.textContent =
-        "Sending your RSVP...";
-
+      status.textContent = "Sending your RSVP...";
       status.className = "status";
 
       try {
 
         const response = await fetch(form.action, {
-
           method: "POST",
-
           body: formData,
-
           headers: {
             Accept: "application/json"
           }
-
         });
 
         if (!response.ok) {
-
           throw new Error(
             "Formspree submission failed"
           );
-
         }
 
-        // Save guest name for welcome message
+        // Save guest information for welcome page
+
         sessionStorage.setItem(
           "weddingGuestName",
           name
@@ -426,22 +407,21 @@
           "true"
         );
 
-        // Redirect to Guest page after success
-        window.location.href = "guest.html";
+        // Redirect only after successful submission
+
+        window.location.assign("guest.html");
 
       } catch (error) {
 
         console.error("RSVP error:", error);
 
         status.textContent =
-          "Sorry, your RSVP could not be submitted. Please try again.";
+          "Unable to submit your RSVP. Please try again.";
 
         status.className = "status error";
 
         submitButton.disabled = false;
-
-        submitButton.textContent =
-          "Submit RSVP";
+        submitButton.textContent = "Submit RSVP";
 
       }
 
