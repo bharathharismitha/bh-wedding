@@ -1,0 +1,516 @@
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:wght@400;600;700&display=swap');
+
+:root {
+  --wine: #820d2b;
+  --gold: #bd8524;
+  --cream: #fff9ef;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  color: #421d25;
+  font-family: Georgia, serif;
+
+  background:
+    radial-gradient(
+      circle at 0 20%,
+      #ffe3d9 0,
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 100% 80%,
+      #ffe3d9 0,
+      transparent 25%
+    ),
+    var(--cream);
+}
+
+/* MAIN CONTAINER */
+
+.shell {
+  max-width: 700px;
+  min-height: 100dvh;
+  margin: auto;
+  padding: 20px 38px 75px;
+  position: relative;
+
+  border-left: 1px solid #efd1a3;
+  border-right: 1px solid #efd1a3;
+
+  overflow: hidden;
+}
+
+/* TOP FLOWER GARLAND */
+
+.shell::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 145px;
+
+  background-image: url("assets/top-garland.png");
+  background-repeat: no-repeat;
+  background-position: top center;
+  background-size: contain;
+
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* SIDE FLOWERS */
+
+.shell::after {
+  content: "";
+  position: absolute;
+  top: 130px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  background-image:
+    url("assets/left-flower.png"),
+    url("assets/right-flower.png");
+
+  background-repeat:
+    repeat-y,
+    repeat-y;
+
+  background-position:
+    left top,
+    right top;
+
+  background-size:
+    35px auto,
+    35px auto;
+
+  pointer-events: none;
+  opacity: 0.85;
+  z-index: 0;
+}
+
+.shell > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* HEADER */
+
+header {
+  text-align: center;
+  padding-top: 125px;
+}
+
+.monogram {
+  font-family: "Great Vibes", cursive;
+  font-size: 68px;
+  color: var(--wine);
+  line-height: 1.15;
+}
+
+.leaves {
+  color: var(--gold);
+  font-size: 19px;
+  margin-top: 5px;
+}
+
+/* NAVIGATION */
+
+nav {
+  display: flex;
+  justify-content: center;
+  gap: clamp(7px, 3vw, 22px);
+  flex-wrap: wrap;
+  margin: 18px 0 8px;
+}
+
+nav a {
+  color: #451820;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: clamp(12px, 3vw, 17px);
+  padding: 7px 5px;
+  border-radius: 6px;
+}
+
+nav a.active {
+  background: var(--wine);
+  color: white;
+}
+
+nav a:hover {
+  color: var(--gold);
+}
+
+nav a.active:hover {
+  color: white;
+}
+
+/* HEADINGS */
+
+h1,
+h2,
+h3 {
+  color: var(--wine);
+  text-align: center;
+}
+
+h1 {
+  font-family: "Great Vibes", cursive;
+  font-size: clamp(42px, 10vw, 68px);
+  font-weight: 400;
+  margin: 12px 0;
+}
+
+h2 {
+  font-family: "Playfair Display", serif;
+  font-size: clamp(25px, 7vw, 38px);
+}
+
+h3 {
+  font-family: "Playfair Display", serif;
+  font-size: 21px;
+  margin-top: 26px;
+}
+
+/* DIVIDERS */
+
+.divider {
+  text-align: center;
+  color: var(--gold);
+  margin: 16px auto;
+  font-size: 21px;
+}
+
+/* GENERAL TEXT */
+
+.center {
+  text-align: center;
+  line-height: 1.7;
+}
+
+.intro {
+  text-align: center;
+  font-size: 19px;
+  font-style: italic;
+  line-height: 1.6;
+}
+
+.name {
+  font-family: "Playfair Display", serif;
+  color: var(--wine);
+  font-size: clamp(25px, 6vw, 40px);
+  text-align: center;
+  line-height: 1.3;
+  margin: 15px 0 7px;
+  overflow-wrap: anywhere;
+}
+
+.parent {
+  text-align: center;
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+.and {
+  font-family: "Great Vibes", cursive;
+  font-size: 45px;
+  color: var(--gold);
+  text-align: center;
+  margin: 15px 0;
+}
+
+.quote {
+  font-size: 18px;
+  font-style: italic;
+  text-align: center;
+  line-height: 1.7;
+  margin: 24px 12px;
+}
+
+/* PHOTOS */
+
+.photo {
+  display: block;
+  width: 100%;
+  max-width: 500px;
+  margin: 20px auto;
+
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+
+  border: 5px solid #fff1d6;
+  outline: 2px solid var(--gold);
+  border-radius: 26px;
+}
+
+/* EVENT AND VENUE CARDS */
+
+.frame {
+  border: 2px solid var(--gold);
+  background: #fff5ecbd;
+  border-radius: 25px;
+  padding: 17px;
+  margin: 22px 0;
+
+  box-shadow: 0 4px 12px #b886461c;
+}
+
+.frame > img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  border-radius: 14px;
+}
+
+.event-heading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.event-icon {
+  width: 75px;
+  height: 75px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.event-title {
+  font-family: "Playfair Display", serif;
+  font-size: 25px;
+  color: var(--wine);
+  text-align: center;
+  margin: 10px 0;
+}
+
+.date {
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--wine);
+}
+
+/* BUTTONS */
+
+.button {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin: 22px auto;
+  padding: 14px 27px;
+
+  border: 0;
+  border-radius: 30px;
+
+  background: var(--wine);
+  color: white;
+
+  font-family: Georgia, serif;
+  font-size: 18px;
+  text-align: center;
+  text-decoration: none;
+
+  cursor: pointer;
+  box-shadow: 0 4px 12px #8d244044;
+}
+
+.button:hover {
+  background: #a41b40;
+}
+
+.button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* RSVP FORM */
+
+.field {
+  display: block;
+  margin: 16px 0;
+  font-weight: bold;
+  color: var(--wine);
+}
+
+input[type="text"],
+input[type="number"],
+input[type="tel"],
+textarea {
+  display: block;
+  width: 100%;
+  margin-top: 7px;
+  padding: 13px;
+
+  border: 1px solid var(--gold);
+  border-radius: 10px;
+
+  font: 16px Georgia, serif;
+  background: white;
+}
+
+label.choice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  margin: 12px 0;
+  padding: 13px;
+
+  border: 1px solid #d9ae70;
+  border-radius: 12px;
+
+  background: #fffaf5;
+  cursor: pointer;
+}
+
+input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  accent-color: var(--wine);
+}
+
+.status {
+  text-align: center;
+  line-height: 1.6;
+  font-weight: bold;
+  min-height: 24px;
+}
+
+.status.success {
+  color: #236b39;
+}
+
+.status.error {
+  color: #a82035;
+}
+
+/* MUSIC BUTTON */
+
+.muter {
+  position: fixed;
+  right: 15px;
+  bottom: 15px;
+
+  min-width: 53px;
+  height: 53px;
+
+  border: 1px solid var(--gold);
+  border-radius: 50px;
+
+  background: var(--wine);
+  color: white;
+
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 10;
+
+  box-shadow: 0 4px 14px #0002;
+}
+
+.muter:hover {
+  background: #a41b40;
+}
+
+/* BOTTOM DECORATION */
+
+.foot {
+  height: 125px;
+  margin-top: 35px;
+
+  background-image: url("assets/bottom-elephants.png");
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  background-size: contain;
+}
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+  .shell {
+    padding: 15px 22px 70px;
+  }
+
+  header {
+    padding-top: 95px;
+  }
+
+  .shell::before {
+    height: 110px;
+  }
+
+  .shell::after {
+    top: 105px;
+    background-size:
+      19px auto,
+      19px auto;
+  }
+
+  .monogram {
+    font-size: 59px;
+  }
+
+  nav {
+    gap: 5px;
+  }
+
+  nav a {
+    padding: 8px 5px;
+  }
+
+  .parent {
+    font-size: 15px;
+  }
+
+  .quote {
+    font-size: 16px;
+    margin: 20px 5px;
+  }
+
+  .frame {
+    padding: 13px;
+  }
+
+  .event-icon {
+    width: 58px;
+    height: 58px;
+  }
+
+  .event-title {
+    font-size: 23px;
+  }
+
+  .foot {
+    height: 90px;
+  }
+}
+
+@media (min-width: 850px) {
+  .shell {
+    padding-left: 48px;
+    padding-right: 48px;
+  }
+}
+
+.muhurtham {
+  text-align: center;
+  color: #820d2b;
+  font-family: "Playfair Display", serif;
+  font-size: 22px;
+  font-weight: bold;
+  margin: 15px 0;
+}
