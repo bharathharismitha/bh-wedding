@@ -1,19 +1,17 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#fff9ef">
-  <title>Bharath & Harishmitha Wedding</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bharath & Harishmitha | Wedding Invitation</title>
   <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
   <main class="shell">
     <header>
       <div class="monogram">B ♡ H</div>
       <div class="leaves">✦ Together Forever ✦</div>
-
       <nav>
         <a class="active" href="index.html">Home</a>
         <a href="events.html">Events</a>
@@ -25,18 +23,12 @@
 
     <div class="divider">❀ ✦ ❀</div>
 
-    <img
-      class="photo"
-      src="assets/couple.png"
-      alt="Bharath and Harishmitha"
-    >
+    <img class="photo" src="assets/couple.png"
+         alt="Bharath and Harishmitha welcoming guests">
 
-    <p class="intro">
-      You Are Cordially Invited to the Wedding of
-    </p>
+    <p class="intro">You Are Cordially Invited to the Wedding of</p>
 
     <h1 class="name">Bharath Reddy Koppela</h1>
-
     <p class="parent">
       S/o Sri Sayareddy Koppela<br>
       &amp; Smt. Padma Koppela
@@ -45,7 +37,6 @@
     <div class="and">&amp;</div>
 
     <h1 class="name">Harishmitha Kusthapoor</h1>
-
     <p class="parent">
       D/o Sri Gangadhar Reddy Kusthapoor<br>
       &amp; Smt. Vanitha Kusthapoor
@@ -54,23 +45,71 @@
     <div class="divider">✦ ❀ ✦</div>
 
     <h2>December 27, 2026</h2>
-
     <p class="center">Sunday</p>
+    <p class="muhurtham">💐 Shubha Muhurtham — 8:12 AM 💐</p>
 
     <p class="quote">
       Your presence will make our special day even more
-      beautiful. Join us as we begin a lifetime of love,
-      laughter, and togetherness.
+      beautiful. Join us as we begin a lifetime of
+      love, laughter, and togetherness.
     </p>
 
-    <div class="foot" aria-hidden="true"></div>
+    <a class="button" href="rsvp.html">RSVP Now</a>
+    <div class="foot"></div>
   </main>
 
-  <audio id="weddingMusic" loop preload="none"></audio>
+  <audio id="weddingMusic" src="assets/music.mp3"
+         loop preload="auto"></audio>
   <button id="musicToggle" class="muter" type="button"
-          aria-label="Play wedding music">♫</button>
+          aria-label="Mute or unmute wedding music">🔊</button>
 
-  <script src="config.js"></script>
-  <script src="script.js"></script>
+  <script>
+    const music = document.getElementById("weddingMusic");
+    const musicButton = document.getElementById("musicToggle");
+
+    music.volume = 0.65;
+    music.muted = sessionStorage.getItem("musicMuted") === "true";
+
+    function updateMusicButton() {
+      musicButton.textContent = music.muted ? "🔇" : "🔊";
+      musicButton.setAttribute("aria-label",
+        music.muted ? "Unmute wedding music" : "Mute wedding music");
+    }
+
+    function playMusic() {
+      music.play().catch(() => {
+        // Sound autoplay may be blocked by the browser.
+      });
+    }
+
+    music.addEventListener("loadedmetadata", () => {
+      const saved = Number(sessionStorage.getItem("musicTime") || 0);
+      if (Number.isFinite(saved) && saved > 0 &&
+          Number.isFinite(music.duration)) {
+        music.currentTime = Math.min(saved, Math.max(0, music.duration - 0.1));
+      }
+    });
+
+    music.addEventListener("timeupdate", () => {
+      sessionStorage.setItem("musicTime", String(music.currentTime));
+    });
+
+    window.addEventListener("pagehide", () => {
+      sessionStorage.setItem("musicTime", String(music.currentTime));
+    });
+
+    musicButton.addEventListener("click", () => {
+      music.muted = !music.muted;
+      sessionStorage.setItem("musicMuted", String(music.muted));
+      updateMusicButton();
+      playMusic();
+    });
+
+    document.addEventListener("pointerdown", playMusic, { once: true });
+    document.addEventListener("keydown", playMusic, { once: true });
+
+    updateMusicButton();
+    playMusic();
+  </script>
 </body>
 </html>
