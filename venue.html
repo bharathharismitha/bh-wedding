@@ -1,19 +1,17 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#fff9ef">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Wedding Venue | Bharath & Harishmitha</title>
   <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
   <main class="shell">
     <header>
       <div class="monogram">B ♡ H</div>
       <div class="leaves">✦ Together Forever ✦</div>
-
       <nav>
         <a href="index.html">Home</a>
         <a href="events.html">Events</a>
@@ -24,47 +22,80 @@
     </header>
 
     <div class="divider">❀ ✦ ❀</div>
-
     <h1>Wedding Venue</h1>
-
-    <p class="quote">
-      Your presence is the greatest blessing as we begin
-      our journey of love and togetherness.
-    </p>
 
     <section class="frame">
       <img src="assets/venue.png" alt="The Bliss at Aubrey">
-
       <h2>The Bliss at Aubrey</h2>
-
       <p class="center">
         4381 US-377<br>
         Aubrey, TX 76227<br>
         United States
       </p>
-
-      <a
-        class="button"
-        href="https://www.google.com/maps/search/?api=1&query=The+Bliss+at+Aubrey+4381+US-377+Aubrey+TX+76227"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
+      <a class="button"
+         href="https://www.google.com/maps/search/?api=1&query=4381+US-377+Aubrey+TX+76227"
+         target="_blank" rel="noopener noreferrer">
         Get Directions
       </a>
     </section>
 
     <p class="quote">
-      We can't wait to celebrate with you!
+      Your presence is the greatest blessing as we begin
+      our journey of love and togetherness.
     </p>
-
-    <div class="foot" aria-hidden="true"></div>
+    <div class="foot"></div>
   </main>
 
-  <audio id="weddingMusic" loop preload="none"></audio>
+  <audio id="weddingMusic" src="assets/music.mp3"
+         loop preload="auto"></audio>
   <button id="musicToggle" class="muter" type="button"
-          aria-label="Play wedding music">♫</button>
+          aria-label="Mute or unmute wedding music">🔊</button>
 
-  <script src="config.js"></script>
-  <script src="script.js"></script>
+  <script>
+    const music = document.getElementById("weddingMusic");
+    const musicButton = document.getElementById("musicToggle");
+
+    music.volume = 0.65;
+    music.muted = sessionStorage.getItem("musicMuted") === "true";
+
+    function updateMusicButton() {
+      musicButton.textContent = music.muted ? "🔇" : "🔊";
+      musicButton.setAttribute("aria-label",
+        music.muted ? "Unmute wedding music" : "Mute wedding music");
+    }
+
+    function playMusic() {
+      music.play().catch(() => {});
+    }
+
+    music.addEventListener("loadedmetadata", () => {
+      const saved = Number(sessionStorage.getItem("musicTime") || 0);
+      if (Number.isFinite(saved) && saved > 0 &&
+          Number.isFinite(music.duration)) {
+        music.currentTime = Math.min(saved, Math.max(0, music.duration - 0.1));
+      }
+    });
+
+    music.addEventListener("timeupdate", () => {
+      sessionStorage.setItem("musicTime", String(music.currentTime));
+    });
+
+    window.addEventListener("pagehide", () => {
+      sessionStorage.setItem("musicTime", String(music.currentTime));
+    });
+
+    musicButton.addEventListener("click", () => {
+      music.muted = !music.muted;
+      sessionStorage.setItem("musicMuted", String(music.muted));
+      updateMusicButton();
+      playMusic();
+    });
+
+    document.addEventListener("pointerdown", playMusic, { once: true });
+    document.addEventListener("keydown", playMusic, { once: true });
+
+    updateMusicButton();
+    playMusic();
+  </script>
 </body>
 </html>
