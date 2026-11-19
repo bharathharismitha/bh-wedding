@@ -1,19 +1,17 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#fff9ef">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Our Guests | Bharath & Harishmitha</title>
   <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
   <main class="shell">
     <header>
       <div class="monogram">B ♡ H</div>
       <div class="leaves">✦ Together Forever ✦</div>
-
       <nav>
         <a href="index.html">Home</a>
         <a href="events.html">Events</a>
@@ -24,54 +22,81 @@
     </header>
 
     <div class="divider">❀ ✦ ❀</div>
-
     <h1>Our Beloved Guests</h1>
-
-    <p class="quote">
-      A celebration becomes truly special because
-      of the people who share it with us.
-    </p>
 
     <section class="frame center">
       <h2>Your Presence Is Our Gift</h2>
-
-      <p>
-        Dear Family and Friends,
-      </p>
-
+      <p>Dear Family and Friends,</p>
       <p>
         We are delighted to invite you to celebrate
         the wedding of Bharath and Harishmitha.
       </p>
-
       <p>
         Your love, blessings, and warm wishes
         mean the world to us.
       </p>
-
       <p>
         We look forward to creating beautiful
         memories together.
       </p>
-
-      <a class="button" href="rsvp.html">
-        Confirm Your RSVP
-      </a>
+      <a class="button" href="rsvp.html">Confirm Your RSVP</a>
     </section>
 
-    <p class="quote">
-      With Love,<br>
-      Bharath &amp; Harishmitha
-    </p>
-
-    <div class="foot" aria-hidden="true"></div>
+    <p class="quote">With Love,<br>Bharath &amp; Harishmitha</p>
+    <div class="foot"></div>
   </main>
 
-  <audio id="weddingMusic" loop preload="none"></audio>
+  <audio id="weddingMusic" src="assets/music.mp3"
+         loop preload="auto"></audio>
   <button id="musicToggle" class="muter" type="button"
-          aria-label="Play wedding music">♫</button>
+          aria-label="Mute or unmute wedding music">🔊</button>
 
-  <script src="config.js"></script>
-  <script src="script.js"></script>
+  <script>
+    const music = document.getElementById("weddingMusic");
+    const musicButton = document.getElementById("musicToggle");
+
+    music.volume = 0.65;
+    music.muted = sessionStorage.getItem("musicMuted") === "true";
+
+    function updateMusicButton() {
+      musicButton.textContent = music.muted ? "🔇" : "🔊";
+      musicButton.setAttribute("aria-label",
+        music.muted ? "Unmute wedding music" : "Mute wedding music");
+    }
+
+    function playMusic() {
+      music.play().catch(() => {});
+    }
+
+    music.addEventListener("loadedmetadata", () => {
+      const saved = Number(sessionStorage.getItem("musicTime") || 0);
+      if (Number.isFinite(saved) && saved > 0 &&
+          Number.isFinite(music.duration)) {
+        music.currentTime = Math.min(saved, Math.max(0, music.duration - 0.1));
+      }
+    });
+
+    music.addEventListener("timeupdate", () => {
+      sessionStorage.setItem("musicTime", String(music.currentTime));
+    });
+
+    window.addEventListener("pagehide", () => {
+      sessionStorage.setItem("musicTime", String(music.currentTime));
+    });
+
+    musicButton.addEventListener("click", () => {
+      music.muted = !music.muted;
+      sessionStorage.setItem("musicMuted", String(music.muted));
+      updateMusicButton();
+      playMusic();
+    });
+
+    document.addEventListener("pointerdown", playMusic, { once: true });
+    document.addEventListener("keydown", playMusic, { once: true });
+
+    updateMusicButton();
+    playMusic();
+  </script>
 </body>
 </html>
+S
