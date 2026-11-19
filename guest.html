@@ -71,7 +71,8 @@
 
       <p>
         The Bliss at Aubrey<br>
-        4381 US-377, Aubrey, TX 76227
+        4381 US-377<br>
+        Aubrey, TX 76227
       </p>
 
       <a
@@ -115,11 +116,8 @@
   <script>
 
     // =====================================
-    // PERSONALIZED THANK-YOU MESSAGE
+    // THANK-YOU MESSAGE (NO GUEST NAMES)
     // =====================================
-
-    const guestName =
-      sessionStorage.getItem("weddingGuestName");
 
     const rsvpSuccess =
       sessionStorage.getItem("weddingRSVPSuccess") === "true";
@@ -132,13 +130,15 @@
 
       document.getElementById(
         "personalWelcome"
-      ).textContent = guestName
-        ? `Dear ${guestName}, your RSVP has been received. We can't wait to celebrate with you!`
-        : "Your RSVP has been received. We can't wait to celebrate with you!";
+      ).textContent =
+        "Your RSVP has been received successfully. " +
+        "We can't wait to celebrate our special day with you!";
 
       sessionStorage.removeItem("weddingRSVPSuccess");
-
     }
+
+    // Remove any guest name saved by older RSVP code
+    sessionStorage.removeItem("weddingGuestName");
 
 
     // =====================================
@@ -168,9 +168,11 @@
     }
 
     function playMusic() {
+
       music.play().catch(() => {
-        // Browser may require user interaction.
+        // Browser may require a click or tap before playback.
       });
+
     }
 
     music.addEventListener("loadedmetadata", () => {
